@@ -3,9 +3,14 @@ const cors = require("cors");
 require("dotenv").config();
 require("colors");
 
-const recordsRoute = require("./routes/recordsRoute"); // Import records route
+const authRoute = require("./routes/authRoute");
+const userRoute = require("./routes/userRoute");
+const recordsRoute = require("./routes/recordsRoute");
 const limbleRoute = require("./routes/limbleRoute");
+
+// Database connection
 const { connect } = require("./config/db_connect");
+const connectDB = require("./config/mongo_db_connect");
 
 const data = require("./records"); // dummy record date
 
@@ -24,6 +29,8 @@ const PORT = parseInt(process.env.PORT || "5000", 10);
 
 // Register routes
 // app.use("/api", testRoute);
+app.use("/api/auth", authRoute);
+app.use("/api/users", userRoute);
 app.use("/api/records", recordsRoute);
 app.use("/api/limble", limbleRoute);
 
@@ -41,11 +48,12 @@ app.get("/api/data/eng", (req, res) => {
 // Database Connection
 (async () => {
   try {
+    await connectDB();
     await connect();
-    console.log("✅ Connected to the database.".green);
+    console.log("✅ All databases connected successfully.".green);
   } catch (error) {
     console.error("❌ Database connection failed!".red, error);
-    process.exit(1); // Exit process if DB connection fails
+    process.exit(1);
   }
 })();
 
